@@ -1,0 +1,228 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Node {
+    int prn;             
+    string name;         
+    Node* next;          
+};
+
+class PinnacleClub {
+    Node* head; 
+    Node* tail; 
+
+public:
+    PinnacleClub() { 
+        head = NULL;
+        tail = NULL;
+    }
+
+    void addPresident(int prn, string name) {
+        Node* newNode = new Node{prn, name, head};
+        head = newNode;
+        if (tail==NULL) { 
+            tail = head;
+        }
+        cout << "President " << name << " added.\n";
+    }
+
+   
+    void addSecretary(int prn, string name) {
+        Node* newNode = new Node{prn, name, nullptr};
+        if (head==NULL) { 
+            head = newNode;
+            tail = newNode;
+        } else {
+            tail->next = newNode;
+            tail = newNode;
+        }
+        cout << "Secretary " << name << " added.\n";
+    }
+
+    void addMember(int prn, string name) {
+        if (head==NULL || tail==NULL) {
+            cout << "Add president and secretary first.\n";
+            return;
+        }
+        Node* newNode = new Node{prn, name, tail};
+        Node* temp = head;
+        while (temp->next != tail) { 
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        cout << "Member " << name << " added.\n";
+    }
+
+    
+    void deletePresident() {
+        if (head==NULL) {
+            cout << "No members in the club.\n";
+            return;
+        }
+        Node* temp = head;
+        head = head->next;
+        if (head==NULL) { 
+            tail = NULL;
+        }
+        cout << "President " << temp->name << " removed.\n";
+        delete temp;
+    }
+
+    
+    void deleteSecretary() {
+        if (head==NULL || tail==NULL) {
+            cout << "No members in the club.\n";
+            return;
+        }
+        if (head == tail) {
+            cout << "Secretary " << tail->name << " removed.\n";
+            delete tail;
+            head = tail = NULL;
+            return;
+        }
+        Node* temp = head;
+        while (temp->next != tail) { 
+            temp = temp->next;
+        }
+        cout << "Secretary " << tail->name << " removed.\n";
+        delete tail;
+        tail = temp;
+        tail->next = NULL;
+    }
+
+    void deleteMember(int prn) {
+        if (head==NULL || tail==NULL) {
+            cout << "No members in the club.\n";
+            return;
+        }
+        if (head->prn == prn) {
+            cout << "Cannot delete the president using this function.\n";
+            return;
+        }
+        if (tail->prn == prn) {
+            cout << "Cannot delete the secretary using this function.\n";
+            return;
+        }
+        Node* temp = head;
+        while ( temp->next->prn != prn) {
+            temp = temp->next;
+        }
+        Node* toDelete = temp->next;
+        temp->next = toDelete->next;
+        cout << "Member " << toDelete->name << " removed.\n";
+        delete toDelete;
+        
+    }
+
+    
+    void displayMembers() {
+        if (head==NULL) {
+            cout << "No members in the club.\n";
+            return;
+        }
+        cout << "Club Members:\n";
+        Node* temp = head;
+        while (temp) {
+            cout << temp->prn << " - " << temp->name << "\n";
+            temp = temp->next;
+        }
+    }
+
+    
+    int countMembers() {
+        int count = 0;
+        Node* temp = head;
+        while (temp) {
+            count++;
+            temp = temp->next;
+        }
+        return count;
+    }
+
+    void concatenate(PinnacleClub& other) {
+        if (other.head==NULL) {
+            cout << "The other division is empty.\n";
+            return;
+        }
+        if (head==NULL) {
+            head = other.head;
+            tail = other.tail;
+        } else {
+            tail->next = other.head;
+            tail = other.tail;
+        }
+        other.head = other.tail = NULL;
+        cout << "Lists concatenated.\n";
+    }
+};
+
+int main() {
+    PinnacleClub divisionA, divisionB;
+
+    int choice;
+    do {
+        cout << "\nMenu:\n";
+        cout << "1. Add President\n2. Add Secretary\n3. Add Member\n";
+        cout << "4. Delete President\n5. Delete Secretary\n6. Delete Member\n";
+        cout << "7. Display Members\n8. Count Members\n9. Concatenate Divisions\n0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                int prn;
+                string name;
+                cout << "Enter PRN and Name for President: ";
+                cin >> prn >> name;
+                divisionA.addPresident(prn, name);
+                break;
+            }
+            case 2: {
+                int prn;
+                string name;
+                cout << "Enter PRN and Name for Secretary: ";
+                cin >> prn >> name;
+                divisionA.addSecretary(prn, name);
+                break;
+            }
+            case 3: {
+                int prn;
+                string name;
+                cout << "Enter PRN and Name for Member: ";
+                cin >> prn >> name;
+                divisionA.addMember(prn, name);
+                break;
+            }
+            case 4:
+                divisionA.deletePresident();
+                break;
+            case 5:
+                divisionA.deleteSecretary();
+                break;
+            case 6: {
+                int prn;
+                cout << "Enter PRN of Member to Delete: ";
+                cin >> prn;
+                divisionA.deleteMember(prn);
+                break;
+            }
+            case 7:
+                divisionA.displayMembers();
+                break;
+            case 8:
+                cout << "Total Members: " << divisionA.countMembers() << "\n";
+                break;
+            case 9:
+                divisionA.concatenate(divisionB);
+                break;
+            case 0:
+                cout << "Exiting program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Try again.\n";
+        }
+    } while (choice != 0);
+
+    return 0;
+}
