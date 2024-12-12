@@ -1,0 +1,29 @@
+# Input string
+string = input("Enter a string: ")
+
+words = string.split()
+longest_word = max(words, key=len)
+print("The word with the longest length is:", longest_word)
+
+char = input("Enter a character to find its frequency: ")
+frequency = string.count(char)
+print(f"The frequency of '{char}' is:", frequency)
+
+if string == string[::-1]:
+    print("The string is a palindrome.")
+else:
+    print("The string is not a palindrome.")
+
+substring = input("Enter a substring to find its first appearance: ")
+index = string.find(substring)
+if index != -1:
+    print(f"The first appearance of '{substring}' is at index:", index)
+else:
+    print(f"'{substring}' is not found in the string.")
+
+word_count = {}
+for word in words:
+    word_count[word] = word_count.get(word, 0) + 1
+print("The occurrences of each word are:")
+for word, count in word_count.items():
+    print(f"{word}: {count}")
