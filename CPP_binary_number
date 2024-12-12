@@ -1,0 +1,119 @@
+#include <iostream>
+using namespace std;
+
+// Node structure for doubly linked list
+struct Node {
+    int data;
+    Node* next;
+    Node* prev;
+    Node(int value) : data(value), next(nullptr), prev(nullptr) {}
+};
+
+class BinaryNumber {
+    Node* head = nullptr;
+    Node* tail = nullptr;
+
+public:
+    void append(int bit) {
+        Node* newNode = new Node(bit);
+        if (!tail) {
+            head = tail = newNode;
+        } else {
+            tail->next = newNode;
+            newNode->prev = tail;
+            tail = newNode;
+        }
+    }
+
+    void display() {
+        for (Node* curr = head; curr; curr = curr->next)
+            cout << curr->data;
+        cout << endl;
+    }
+
+    void onesComplement() {
+        for (Node* curr = head; curr; curr = curr->next)
+            curr->data = 1 - curr->data;
+    }
+
+    void twosComplement() {
+        onesComplement();
+        Node* curr = tail;
+        int carry = 1;
+        while (curr && carry) {
+            int sum = curr->data + carry;
+            curr->data = sum % 2;
+            carry = sum / 2;
+            curr = curr->prev;
+        }
+    }
+
+    static BinaryNumber add(BinaryNumber& bin1, BinaryNumber& bin2) {
+        BinaryNumber result;
+        Node* p1 = bin1.tail;
+        Node* p2 = bin2.tail;
+        int carry = 0;
+
+        while (p1 || p2 || carry) {
+            int bit1 = p1 ? p1->data : 0;
+            int bit2 = p2 ? p2->data : 0;
+
+            int sum = bit1 + bit2 + carry;
+            result.append(sum % 2);
+            carry = sum / 2;
+
+            if (p1) p1 = p1->prev;
+            if (p2) p2 = p2->prev;
+        }
+
+        BinaryNumber reversed;
+        for (Node* curr = result.tail; curr; curr = curr->prev)
+            reversed.append(curr->data);
+
+        return reversed;
+    }
+};
+
+int main() {
+    BinaryNumber bin1, bin2;
+
+    cout << "Enter the number of bits for the first binary number: ";
+    int n1;
+    cin >> n1;
+    cout << "Enter the bits: ";
+    for (int i = 0; i < n1; i++) {
+        int bit;
+        cin >> bit;
+        bin1.append(bit);
+    }
+
+    cout << "Enter the number of bits for the second binary number: ";
+    int n2;
+    cin >> n2;
+    cout << "Enter the bits: ";
+    for (int i = 0; i < n2; i++) {
+        int bit;
+        cin >> bit;
+        bin2.append(bit);
+    }
+
+    cout << "First binary number: ";
+    bin1.display();
+
+    cout << "Second binary number: ";
+    bin2.display();
+
+    bin1.onesComplement();
+    cout << "1's complement of the first binary number: ";
+    bin1.display();
+
+    bin1.twosComplement();
+    cout << "2's complement of the first binary number: ";
+    bin1.display();
+
+    BinaryNumber result = BinaryNumber::add(bin1, bin2);
+    cout << "Sum of the two binary numbers: ";
+    result.display();
+
+    return 0;
+}
